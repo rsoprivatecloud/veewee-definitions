@@ -12,8 +12,10 @@ yum -y upgrade
 wget http://dl.fedoraproject.org/pub/epel/5/x86_64/epel-release-5-4.noarch.rpm
 rpm -Uvh epel-release*
 
-/usr/sbin/useradd -m stack
-echo 'stack ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
+yum install -y cloud-init
+
+#/usr/sbin/useradd -m stack
+#echo 'stack ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
 sed -i 's/^user: ec2-user/user: stack/g' /etc/cloud/cloud.cfg
 
 cat > /etc/rc.local <<END
