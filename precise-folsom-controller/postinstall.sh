@@ -1,42 +1,16 @@
 #!/bin/bash
 
 export DEBIAN_FRONTEND=noninteractive
-
-function package_update() {
-    apt-get update
-    yes '' | apt-get -y -o Dpkg::Options::="--force-confnew" upgrade
-    yes '' | apt-get -y -o Dpkg::Options::="--force-confnew" dist-upgrade
-}
-
-package_update
+apt-get update
+yes '' | apt-get -y -o Dpkg::Options::="--force-confnew" upgrade
+yes '' | apt-get -y -o Dpkg::Options::="--force-confnew" dist-upgrade
 
 export IP="`ip a s eth0 | awk '/inet / {sub(/\/[[:digit:]]+$/, "", $2); print $2}'`"
 
-apt-get install -y ruby1.9.1 ruby1.9.1-dev
+apt-get install -y ruby1.9.1 ruby1.9.1-dev build-essential wget ssl-cert curl
 update-alternatives --set ruby /usr/bin/ruby1.9.1
 update-alternatives --set gem /usr/bin/gem1.9.1
 gem install chef --no-ri --no-rdoc chef
-
-
-# ### package install chef
-# 
-# # add repo
-# echo "deb http://apt.opscode.com/ `lsb_release -cs`-0.10 main" | tee /etc/apt/sources.list.d/opscode.list
-# 
-# # import key
-# mkdir -p /etc/apt/trusted.gpg.d
-# gpg --keyserver keys.gnupg.net --recv-keys 83EF826A
-# gpg --export packages@opscode.com | tee /etc/apt/trusted.gpg.d/opscode-keyring.gpg > /dev/null
-# 
-# package_update
-# 
-# # install chef packages
-# apt-get install opscode-keyring # permanent upgradeable keyring
-# echo "chef chef/chef_server_url string http://$IP:4000" | debconf-set-selections
-# echo "chef-solr chef-solr/amqp_password string secrete" | debconf-set-selections
-# echo "chef-server-webui chef-server-webui/admin_password string secrete" | debconf-set-selections
-# apt-get install chef-server -y
-
 
 ### gem install chef with chef-solo
 mkdir -p /etc/chef
@@ -60,8 +34,15 @@ END
 chef-solo -c /etc/chef/solo.rb -j chef.json -r http://s3.amazonaws.com/chef-solo/bootstrap-latest.tar.gz
 ln -sf /usr/local/bin/chef-server /usr/sbin/chef-server
 ln -sf /usr/local/bin/chef-server-webui /usr/sbin/chef-server-webui
+ln -sf /usr/local/bin/chef-solr /usr/sbin/chef-solr
+ln -sf /usr/local/bin/chef-expander /usr/sbin/chef-expander
 rm -f /etc/chef/validation.pem
+service chef-solr restart
+service chef-expander restart
 service chef-server restart
+update-rc.d chef-solr enable
+update-rc.d chef-expander enable
+update-rc.d chef-server enable
 
 # create a chef client
 cat > /etc/chef/client.rb <<END
@@ -101,21 +82,6 @@ END
 mkdir -p /opt/rpcs
 apt-get install -y git
 git clone --recursive https://github.com/rcbops/chef-cookbooks /opt/rpcs/chef-cookbooks
-
-# # FIXME:
-# cat <<END | patch -p0
-# --- /opt/rpcs/chef-cookbooks/cookbooks/dsh/providers/group.rb
-# +++ /opt/rpcs/chef-cookbooks/cookbooks/dsh/providers/group.rb
-# @@ -144,7 +144,7 @@
-#    if not (::File.exists? privkey_path or ::File.exists? pubkey_path)
-#      Chef::Log.info("Generating ssh keys for user #{new_resource.admin_user} from #{privkey_path} and #{pubkey_path}")
-#      system("su #{new_resource.admin_user} -c 'ssh-keygen -q -f #{privkey_path} " +
-# -           "-P \"\"'", :in=>"/dev/null")
-# +           "-P \"\"'")
-#      new_resource.updated_by_last_action(true)
-#    end
-#    pubkey = ::File.read("#{home}/.ssh/id_rsa.pub").strip
-# END
 
 # upload cookbooks and roles to chef
 knife cookbook upload -a -o /opt/rpcs/chef-cookbooks/cookbooks
