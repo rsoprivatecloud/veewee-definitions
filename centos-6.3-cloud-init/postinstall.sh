@@ -10,6 +10,7 @@ yum -y upgrade
 
 wget http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
 rpm -Uvh epel-release*
+rm epel-release*
 
 yum install -y vim man man-pages acpid acpitools cloud-init
 
@@ -38,8 +39,9 @@ TYPE="Ethernet"
 EOF
         fi
     done
-    if [[ ! `grep GATEWAYDEV /etc/sysconfig/network` ]] ; then
+    if [[ ! \`grep GATEWAYDEV /etc/sysconfig/network\` ]] ; then
         echo GATEWAYDEV=eth0 >> /etc/sysconfig/network
+        shutdown -r now
     fi
 END
 
