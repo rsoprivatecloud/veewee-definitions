@@ -23,6 +23,26 @@ sed -i 's/^user: ec2-user/user: stack/g' /etc/cloud/cloud.cfg
 #   udevadm trigger 
 # END
 
+cat > /etc/rc.local <<END
+    for dev in \`awk '\$1 ~ /^eth/ {print \$1}' /proc/net/dev\` ; do
+        dev=\${dev/:/}
+        script=/etc/sysconfig/network-scripts/ifcfg-\$dev
+        if [[ ! -f \$script ]] ; then
+            cat > \$script <<EOF
+DEVICE="\$dev"
+BOOTPROTO="dhcp"
+IPV6INIT="yes"
+NM_CONTROLLED="yes"
+ONBOOT="yes"
+TYPE="Ethernet"
+EOF
+        fi
+    done
+    if [[ ! `grep GATEWAYDEV /etc/sysconfig/network` ]] ; then
+        echo GATEWAYDEV=eth0 >> /etc/sysconfig/network
+    fi
+END
+
 sed -i '/^HWADDR/d' /etc/sysconfig/network-scripts/ifcfg-eth0
 echo -n > /etc/udev/rules.d/70-persistent-net.rules
 echo -n > /lib/udev/rules.d/75-persistent-net-generator.rules
