@@ -12,6 +12,10 @@ wget http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
 rpm -Uvh epel-release*
 rm epel-release*
 
+wget cloud-utils-0.27-0.2.bzr216.fc18.noarch.rpm
+rpm -Uvh cloud-utils*
+rm cloud-utils*
+
 yum install -y vim man man-pages acpid acpitools cloud-init
 
 #/usr/sbin/useradd -m stack
@@ -41,7 +45,8 @@ EOF
     done
     if [[ ! \`grep GATEWAYDEV /etc/sysconfig/network\` ]] ; then
         echo GATEWAYDEV=eth0 >> /etc/sysconfig/network
-        shutdown -r now
+        #shutdown -r now
+        service network restart
     fi
 END
 
