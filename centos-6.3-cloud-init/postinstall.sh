@@ -22,10 +22,15 @@ TYPE="Ethernet"
 EOF
         fi
     done
-    if [[ ! \`grep GATEWAYDEV /etc/sysconfig/network\` ]] ; then
+    if [[ ! \`grep GATEWAYDEV /etc/sysconfig/network\` ]]; then
         echo GATEWAYDEV=eth0 >> /etc/sysconfig/network
         #shutdown -r now
         service network restart
+    fi
+    if [[ ! -f /etc/dont_grow ]] ; then
+        if [[ \`growpart /dev/vda 2 | fgrep 'CHANGED:'\` ]] ; then
+            shutdown -r now
+        fi
     fi
 END
 
@@ -37,4 +42,3 @@ echo -n > /lib/udev/rules.d/75-persistent-net-generator.rules
 sed -i 's/kernel.*/& console=tty console=ttyS0 console=hvc0/' /boot/grub/grub.conf # pci=nobfsort
 
 exit
-
