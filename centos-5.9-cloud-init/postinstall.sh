@@ -27,11 +27,9 @@ EOF
         #shutdown -r now
         service network restart
     fi
-    if [[ ! -f /etc/dont_grow ]] ; then
-        if [[ \`growpart /dev/vda 2 | fgrep 'CHANGED:'\` ]] ; then
-            shutdown -r now
-        fi
-    fi
+    [[ ! -f /etc/dont_grow ]] && \
+        growpart /dev/vda 2 | fgrep 'CHANGED:' && \
+        shutdown -r now
 END
 
 sed -i '/^HWADDR/d' /etc/sysconfig/network-scripts/ifcfg-eth0
