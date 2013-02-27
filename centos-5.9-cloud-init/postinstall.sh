@@ -1,9 +1,19 @@
+wget http://dl.fedoraproject.org/pub/epel/5/x86_64/epel-release-5-4.noarch.rpm
+rpm -Uvh epel*
+rm -f epel*
+
 yum -y update
 yum -y upgrade
+yum install -y vim-enchanced man man-pages acpid cloud-init
 
-yum install -y http://dl.fedoraproject.org/pub/epel/5/x86_64/epel-release-5-4.noarch.rpm
-yum install -y http://kojipkgs.fedoraproject.org//packages/cloud-utils/0.27/0.2.bzr216.fc18/noarch/cloud-utils-0.27-0.2.bzr216.fc18.noarch.rpm
-yum install -y vim man man-pages acpid acpitools cloud-init
+#wget http://kojipkgs.fedoraproject.org/packages/cloud-utils/0.27/0.2.bzr216.fc18/noarch/cloud-utils-0.27-0.2.bzr216.fc18.noarch.rpm
+#rpm -Uvh cloud-utils*
+
+wget http://kojipkgs.fedoraproject.org//packages/cloud-utils/0.27/0.2.bzr216.fc18/src/cloud-utils-0.27-0.2.bzr216.fc18.src.rpm
+rpm2cpio cloud-utils-0.27-0.2.bzr216.fc18.src.rpm | cpio -id
+tar xzf cloud-utils-0.27-bzr216.tar.gz cloud-utils-0.27-bzr216/bin/growpart
+install -m 0755 cloud-utils-0.27-bzr216/bin/growpart /usr/bin/growpart
+rm -rf cloud-utils*
 
 sed -i 's/^user: ec2-user/user: stack/g' /etc/cloud/cloud.cfg
 
