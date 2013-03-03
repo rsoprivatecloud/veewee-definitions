@@ -37,7 +37,7 @@ EOF
     fi
     PATH="$PATH:/sbin"
     #ROOTPART=\`parted -s /dev/vda print | awk '/boot/ {print \$1}'\`
-    ROOTPART=\`sfdisk -l /dev/vda 2>&1 | awk '\$1 ~ /vda/ && \$2 ~ /*/ {gsub(/\\/dev\\/vda/, "", \$1); print \$1}'\`
+    ROOTPART=\`sfdisk -d /dev/vda 2>&1 | awk '\$1 ~ "/dev/vda" && \$8 == "bootable" {gsub("/dev/vda", "", \$1); print \$1}'\`
     [[ ! -f /etc/dont_grow ]] && \\
         growpart /dev/vda \$ROOTPART | fgrep 'CHANGED:' && \\
         shutdown -r now
