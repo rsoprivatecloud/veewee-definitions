@@ -4,7 +4,7 @@ rm -f epel*
 
 yum -y update
 yum -y upgrade
-yum install -y vim-enchanced man man-pages acpid cloud-init
+yum install -y cloud-init
 
 #wget http://kojipkgs.fedoraproject.org/packages/cloud-utils/0.27/0.2.bzr216.fc18/noarch/cloud-utils-0.27-0.2.bzr216.fc18.noarch.rpm
 #rpm -Uvh cloud-utils*
@@ -37,8 +37,9 @@ EOF
         #shutdown -r now
         service network restart
     fi
-    [[ ! -f /etc/dont_grow ]] && \
-        growpart /dev/vda 2 | fgrep 'CHANGED:' && \
+    ROOTPART=\`/sbin/parted -s /dev/vda print | awk '/boot/ {print \$1}'\`
+    [[ ! -f /etc/dont_grow ]] && \\
+        growpart /dev/vda \$ROOTPART | fgrep 'CHANGED:' && \\
         shutdown -r now
 END
 
