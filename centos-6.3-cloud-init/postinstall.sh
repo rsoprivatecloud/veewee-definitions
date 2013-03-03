@@ -2,7 +2,7 @@ yum install -y http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.no
 
 yum -y update
 yum -y upgrade
-yum install -y vim-enchanced man man-pages acpid acpitools cloud-init
+yum install -y cloud-init
 
 yum install -y http://kojipkgs.fedoraproject.org//packages/cloud-utils/0.27/0.2.bzr216.fc18/noarch/cloud-utils-0.27-0.2.bzr216.fc18.noarch.rpm
 
@@ -28,8 +28,11 @@ EOF
         #shutdown -r now
         service network restart
     fi
-    [[ ! -f /etc/dont_grow ]] && \
-        growpart /dev/vda 2 | fgrep 'CHANGED:' && \
+    PATH="$PATH:/sbin"
+    #ROOTPART=\`parted -s /dev/vda print | awk '/boot/ {print \$1}'\`
+    ROOTPART=\`sfdisk -l /dev/vda 2>&1 | awk '\$1 ~ /vda/ && \$2 ~ /*/ {gsub(/\\/dev\\/vda/, "", \$1); print \$1}'\`
+    [[ ! -f /etc/dont_grow ]] && \\
+        growpart /dev/vda \$ROOTPART | fgrep 'CHANGED:' && \\
         shutdown -r now
 END
 
