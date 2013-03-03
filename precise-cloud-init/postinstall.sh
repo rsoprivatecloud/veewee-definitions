@@ -21,4 +21,7 @@ END
 echo "stack        ALL=(ALL)       NOPASSWD: ALL" >> /etc/sudoers.d/stack
 chmod 0440 /etc/sudoers.d/stack
 
+sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="quiet"/GRUB_CMDLINE_LINUX_DEFAULT="quiet console=tty console=ttyS0 console=hvc0"/' /etc/default/grub
+update-grub
+
 #chown -R $SUDO_USER:$SUDO_USER .
