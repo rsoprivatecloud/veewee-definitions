@@ -5,15 +5,20 @@ apt-get update
 yes '' | apt-get -y -o Dpkg::Options::="--force-confnew" upgrade
 yes '' | apt-get -y -o Dpkg::Options::="--force-confnew" dist-upgrade
 
-apt-get install -y vim-tiny wget ssl-cert curl acpid cloud-init cloud-utils cloud-initramfs-growroot
+apt-get install -y vim-tiny wget ssl-cert curl acpid cloud-init cloud-utils # cloud-initramfs-growroot
 
 sed -i 's/^user: ubuntu/user: stack/g' /etc/cloud/cloud.cfg
 
-# some os stuffs
-#usermod -a -G sudo $SUDO_USER
-#cp /etc/sudoers /etc/sudoers.orig
-#sed -i -e 's/%sudo\tALL=(ALL:ALL) ALL/%sudo\tALL=(ALL:ALL) NOPASSWD:ALL/' /etc/sudoers
+cat > /etc/rc.local <<END
+    PATH="$PATH:/sbin"
+    #ROOTPART=\`parted -s /dev/vda print | awk '/boot/ {print \$1}'\`
+    ROOTPART=\`sfdisk -l /dev/vda 2>&1 | awk '\$1 ~ /vda/ && \$2 ~ /*/ {gsub(/\\/dev\\/vda/, "", \$1); print \$1}'\`
+    [[ ! -f /etc/dont_grow ]] && \\
+        growpart /dev/vda \$ROOTPART | fgrep 'CHANGED:' && \\
+        shutdown -r now
+END
+
 echo "stack        ALL=(ALL)       NOPASSWD: ALL" >> /etc/sudoers.d/stack
 chmod 0440 /etc/sudoers.d/stack
 
-chown -R $SUDO_USER:$SUDO_USER .
+#chown -R $SUDO_USER:$SUDO_USER .
