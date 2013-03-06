@@ -15,7 +15,7 @@ rm -rf cloud-utils*
 
 sed -i 's/^user: ec2-user/user: stack/g' /etc/cloud/cloud.cfg
 
-cat > /etc/rc.local <<END
+cat >> /etc/rc.local <<END
     for dev in \`awk '\$1 ~ /^eth/ {print \$1}' /proc/net/dev\` ; do
         dev=\${dev/:/}
         script=/etc/sysconfig/network-scripts/ifcfg-\$dev
@@ -46,6 +46,11 @@ END
 sed -i '/^HWADDR/d' /etc/sysconfig/network-scripts/ifcfg-eth0
 echo -n > /etc/udev/rules.d/70-persistent-net.rules
 echo -n > /lib/udev/rules.d/75-persistent-net-generator.rules
+
+cat >> /etc/sysctl.conf <<END
+net.ipv6.conf.all.disable_ipv6 = 1
+net.ipv6.conf.default.disable_ipv6 = 1
+END
 
 # needed for console logging in kvm
 sed -i 's/kernel.*/& console=tty console=ttyS0 console=hvc0/' /boot/grub/grub.conf # pci=nobfsort
