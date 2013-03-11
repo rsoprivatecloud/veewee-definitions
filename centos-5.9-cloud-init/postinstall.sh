@@ -17,7 +17,7 @@ rm -rf cloud-utils*
 
 sed -i 's/^user: ec2-user/user: stack/g' /etc/cloud/cloud.cfg
 
-cat > /etc/rc.local <<END
+cat >> /etc/rc.local <<END
     for dev in \`awk '\$1 ~ /^eth/ {print \$1}' /proc/net/dev\` ; do
         dev=\${dev/:/}
         script=/etc/sysconfig/network-scripts/ifcfg-\$dev
@@ -25,20 +25,19 @@ cat > /etc/rc.local <<END
             cat > \$script <<EOF
 DEVICE="\$dev"
 BOOTPROTO="dhcp"
-IPV6INIT="yes"
+IPV6INIT="no"
 NM_CONTROLLED="yes"
 ONBOOT="yes"
 TYPE="Ethernet"
 EOF
         fi
     done
-    if [[ ! \`grep GATEWAYDEV /etc/sysconfig/network\` ]]; then
+    sed -i 's/IPV6INIT="yes"/IPV6INIT="no"/' /etc/sysconfig/network-scripts/ifcfg-*
+    [[ ! \`grep GATEWAYDEV /etc/sysconfig/network\` ]] && \\
         echo GATEWAYDEV=eth0 >> /etc/sysconfig/network
-        #shutdown -r now
-        service network restart
-    fi
+    service network restart
     PATH="$PATH:/sbin"
-    ROOTPART=\`parted -s /dev/vda print | awk '/boot/ {print \$1}'\`
+    #ROOTPART=\`parted -s /dev/vda print | awk '/boot/ {print \$1}'\`
     ROOTPART=\`sfdisk -d /dev/vda 2>&1 | awk '\$1 ~ "/dev/vda" && \$8 == "bootable" {gsub("/dev/vda", "", \$1); print \$1}'\`
     [[ ! -f /etc/growroot-disabled ]] && \\
         growpart /dev/vda \$ROOTPART | fgrep 'CHANGED:' && \\
@@ -56,5 +55,7 @@ END
 
 # needed for console logging in kvm
 sed -i 's/kernel.*/& console=tty console=ttyS0 console=hvc0/' /boot/grub/grub.conf # pci=nobfsort
+
+#echo -e 'x\nf\ni\nw\nq' | /sbin/fdisk /dev/vda
 
 exit

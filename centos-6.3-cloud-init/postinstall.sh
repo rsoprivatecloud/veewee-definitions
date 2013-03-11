@@ -23,18 +23,17 @@ cat >> /etc/rc.local <<END
             cat > \$script <<EOF
 DEVICE="\$dev"
 BOOTPROTO="dhcp"
-IPV6INIT="yes"
+IPV6INIT="no"
 NM_CONTROLLED="yes"
 ONBOOT="yes"
 TYPE="Ethernet"
 EOF
         fi
     done
-    if [[ ! \`grep GATEWAYDEV /etc/sysconfig/network\` ]]; then
+    sed -i 's/IPV6INIT="yes"/IPV6INIT="no"/' /etc/sysconfig/network-scripts/ifcfg-*
+    [[ ! \`grep GATEWAYDEV /etc/sysconfig/network\` ]] && \\
         echo GATEWAYDEV=eth0 >> /etc/sysconfig/network
-        #shutdown -r now
-        service network restart
-    fi
+    service network restart
     PATH="$PATH:/sbin"
     #ROOTPART=\`parted -s /dev/vda print | awk '/boot/ {print \$1}'\`
     ROOTPART=\`sfdisk -d /dev/vda 2>&1 | awk '\$1 ~ "/dev/vda" && \$8 == "bootable" {gsub("/dev/vda", "", \$1); print \$1}'\`
