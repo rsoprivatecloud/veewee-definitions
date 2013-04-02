@@ -3,17 +3,17 @@ Veewee::Session.declare({
   :memory_size=> '1024',
   :disk_size => '4096',
   :disk_format => 'qcow2',
-  :hostiocache => 'on',
+  :hostiocache => 'off',
   :ioapic => 'on',
   :pae => 'on',
   :os_type_id => 'RedHat_64',
-  :iso_file => "CentOS-5.9-x86_64-bin-DVD-1of2.iso",
-  :iso_src => "http://mirrors.kernel.org/centos/5.9/isos/x86_64/CentOS-5.9-x86_64-bin-DVD-1of2.iso",
-  :iso_md5 => "c8caaa18400dfde2065d8ef58eb9e9bf",
+  :iso_file => "CentOS-6.2-x86_64-minimal.iso",
+  :iso_src => "http://vault.centos.org/6.2/isos/x86_64/CentOS-6.2-x86_64-minimal.iso",
+  :iso_md5 => "20dac370a6e08ded2701e4104855bc6e",
   :iso_download_timeout => 10000,
   :boot_wait => "20",
   :boot_cmd_sequence => [
-    'linux text ks=http://%IP%:%PORT%/ks.cfg<Enter>'
+    '<Tab> text ks=http://%IP%:%PORT%/ks.cfg<Enter>'
   ],
   :kickstart_port => "7122",
   :kickstart_timeout => 10000,

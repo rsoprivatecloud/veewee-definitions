@@ -11,7 +11,7 @@ Veewee::Session.declare({
   :iso_src => "http://www.mirrorservice.org/sites/mirror.centos.org/6.3/isos/x86_64/CentOS-6.3-x86_64-minimal.iso",
   :iso_md5 => "087713752fa88c03a5e8471c661ad1a2",
   :iso_download_timeout => 10000,
-  :boot_wait => "10",
+  :boot_wait => "20",
   :boot_cmd_sequence => [
     '<Tab> text ks=http://%IP%:%PORT%/ks.cfg<Enter>'
   ],
