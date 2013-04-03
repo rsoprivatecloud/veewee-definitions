@@ -3,7 +3,7 @@ Veewee::Session.declare({
   :memory_size=> '1024',
   :disk_size => '4096',
   :disk_format => 'qcow2',
-  :hostiocache => 'off',
+  :hostiocache => 'on',
   :ioapic => 'on',
   :pae => 'on',
   :os_type_id => 'RedHat_64',
