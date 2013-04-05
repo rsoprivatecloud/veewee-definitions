@@ -5,20 +5,6 @@ apt-get update
 yes '' | apt-get -y -o Dpkg::Options::="--force-confnew" upgrade
 yes '' | apt-get -y -o Dpkg::Options::="--force-confnew" dist-upgrade
 
-apt-get install -y vim-tiny wget ssl-cert curl acpid
-
-cat >> /etc/sysctl.conf <<END
-net.ipv6.conf.all.disable_ipv6 = 1
-net.ipv6.conf.default.disable_ipv6 = 1
-END
-
-echo "rack        ALL=(ALL)       NOPASSWD: ALL" >> /etc/sudoers.d/rack
-chmod 0440 /etc/sudoers.d/rack
-
-sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="quiet"/GRUB_CMDLINE_LINUX_DEFAULT="quiet console=tty console=ttyS0 console=hvc0"/' /etc/default/grub
-install-grub /dev/vda
-update-grub
-
 CHEF_SERVER_VERSION=${CHEF_SERVER_VERSION:-11.0.6}
 
 PRIMARY_INTERFACE=$(ip route list match 0.0.0.0 | awk 'NR==1 {print $5}')
@@ -65,8 +51,22 @@ chef-server-ctl restart
 apt-get autoremove
 apt-get clean
 rm -f /tmp/chef-server.deb 
-rm -rf /var/cache
+# rm -rf /var/cache
 dd if=/dev/zero of=/tmp/zeros
 rm -f /tmp/zeros
+
+apt-get install -y vim-tiny wget ssl-cert curl acpid
+
+cat >> /etc/sysctl.conf <<END
+net.ipv6.conf.all.disable_ipv6 = 1
+net.ipv6.conf.default.disable_ipv6 = 1
+END
+
+echo "rack        ALL=(ALL)       NOPASSWD: ALL" >> /etc/sudoers.d/rack
+chmod 0440 /etc/sudoers.d/rack
+
+sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="quiet"/GRUB_CMDLINE_LINUX_DEFAULT="quiet console=tty console=ttyS0 console=hvc0"/' /etc/default/grub
+install-grub /dev/vda
+update-grub
 
 exit
