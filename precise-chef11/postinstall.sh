@@ -34,12 +34,7 @@ export HOME=${HOMEDIR}
 
 curl -L "http://www.opscode.com/chef/download-server?p=ubuntu&pv=12.04&m=x86_64&v=${CHEF_SERVER_VERSION}" > /tmp/chef-server.deb
 dpkg -i /tmp/chef-server.deb
-
-cat >> /etc/chef-server/chef-server.rb <<END
-    erchef['listen'] = '${MY_IP}'
-END
 chef-server-ctl reconfigure
-#chef-server-ctl restart
 
 mkdir -p ${HOMEDIR}/.chef
 cp /etc/chef-server/{chef-validator.pem,chef-webui.pem,admin.pem} ${HOMEDIR}/.chef
@@ -60,6 +55,12 @@ EOF
     # setup the path
     echo 'export PATH=${PATH}:/opt/chef-server/embedded/bin' >> ${HOMEDIR}/.profile
 fi
+
+cat >> /etc/chef-server/chef-server.rb <<END
+    erchef['listen'] = '${MY_IP}'
+END
+chef-server-ctl reconfigure
+chef-server-ctl restart
 
 #rm -f /tmp/chef-server.deb
 
