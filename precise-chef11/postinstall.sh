@@ -52,8 +52,6 @@ apt-get autoremove
 apt-get clean
 rm -f /tmp/chef-server.deb 
 # rm -rf /var/cache
-dd if=/dev/zero of=/tmp/zeros
-rm -f /tmp/zeros
 
 apt-get install -y vim-tiny wget ssl-cert curl acpid
 
@@ -68,5 +66,8 @@ chmod 0440 /etc/sudoers.d/rack
 sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="quiet"/GRUB_CMDLINE_LINUX_DEFAULT="quiet console=tty console=ttyS0 console=hvc0"/' /etc/default/grub
 grub-install /dev/vda
 update-grub2
+
+dd if=/dev/zero of=/tmp/zeros
+rm -f /tmp/zeros
 
 exit
