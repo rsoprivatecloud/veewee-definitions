@@ -62,6 +62,11 @@ END
 chef-server-ctl reconfigure
 chef-server-ctl restart
 
-#rm -f /tmp/chef-server.deb
+apt-get autoremove
+apt-get clean
+rm -f /tmp/chef-server.deb 
+rm -rf /var/cache
+dd if=/dev/zero of=/tmp/zeros
+rm -f /tmp/zeros
 
 exit
