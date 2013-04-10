@@ -5,6 +5,8 @@ apt-get update
 yes '' | apt-get -y -o Dpkg::Options::="--force-confnew" upgrade
 yes '' | apt-get -y -o Dpkg::Options::="--force-confnew" dist-upgrade
 
+apt-get install -y vim-tiny wget ssl-cert curl acpid
+
 CHEF_SERVER_VERSION=${CHEF_SERVER_VERSION:-11.0.6}
 
 PRIMARY_INTERFACE=$(ip route list match 0.0.0.0 | awk 'NR==1 {print $5}')
@@ -52,8 +54,6 @@ apt-get autoremove
 apt-get clean
 rm -f /tmp/chef-server.deb 
 # rm -rf /var/cache
-
-apt-get install -y vim-tiny wget ssl-cert curl acpid
 
 cat >> /etc/sysctl.conf <<END
 net.ipv6.conf.all.disable_ipv6 = 1
