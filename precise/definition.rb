@@ -1,9 +1,9 @@
 Veewee::Session.declare({
   :cpu_count => '1',
   :memory_size=> '2048',
-  :disk_size => '20480',
+  :disk_size => '81920',
   :disk_format => 'qcow2',
-  :hostiocache => 'off',
+  :hostiocache => 'on',
   :os_type_id => 'Ubuntu_64',
   :iso_file => "ubuntu-12.04.1-server-amd64.iso",
   :iso_src => "http://releases.ubuntu.com/12.04/ubuntu-12.04.1-server-amd64.iso",
