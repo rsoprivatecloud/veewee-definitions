@@ -5,7 +5,7 @@ apt-get update
 yes '' | apt-get -y -o Dpkg::Options::="--force-confnew" upgrade
 yes '' | apt-get -y -o Dpkg::Options::="--force-confnew" dist-upgrade
 
-apt-get install -y vim-tiny wget ssl-cert curl acpid
+apt-get install -y vim-tiny wget ssl-cert curl acpid pwgen
 
 CHEF_SERVER_VERSION=${CHEF_SERVER_VERSION:-11.0.6}
 
@@ -15,14 +15,42 @@ MY_IP=169.254.123.2
 CHEF_UNIX_USER=${CHEF_UNIX_USER:-rack}
 # due to http://tickets.opscode.com/browse/CHEF-3849 CHEF_FE_PORT is not used yet
 CHEF_FE_PORT=${CHEF_FE_PORT:-80}
-CHEF_FE_SSL_PORT=${CHEF_FE_SSL_PORT:-443}
+CHEF_FE_SSL_PORT=${CHEF_FE_SSL_PORT:-4000}
 CHEF_URL=${CHEF_URL:-https://${MY_IP}:${CHEF_FE_SSL_PORT}}
 
 HOMEDIR=$(getent passwd ${CHEF_UNIX_USER} | cut -d: -f6)
 export HOME=${HOMEDIR}
 
+CHEF_WEBUI_PASSWORD=${CHEF_WEBUI_PASSWORD:-$(pwgen -1)}
+CHEF_AMQP_PASSWORD=${CHEF_AMQP_PASSWORD:-$(pwgen -1)}
+CHEF_POSTGRESQL_PASSWORD=${CHEF_POSTGRESQL_PASSWORD:-$(pwgen -1)}
+CHEF_POSTGRESQL_RO_PASSWORD=${CHEF_POSTGRESQL_PASSWORD:-$(pwgen -1)}
+
 curl -L "http://www.opscode.com/chef/download-server?p=ubuntu&pv=12.04&m=x86_64&v=${CHEF_SERVER_VERSION}" > /tmp/chef-server.deb
 dpkg -i /tmp/chef-server.deb
+
+mkdir -p /etc/chef-server
+cat > /etc/chef-server/chef-server.rb <<EOF
+node.override["chef_server"]["chef-server-webui"]["web_ui_admin_default_password"] = "${CHEF_WEBUI_PASSWORD}"
+node.override["chef_server"]["rabbitmq"]["password"] = "${CHEF_AMQP_PASSWORD}"
+node.override["chef_server"]["postgresql"]["sql_password"] = "${CHEF_POSTGRESQL_PASSWORD}"
+node.override["chef_server"]["postgresql"]["sql_ro_password"] = "${CHEF_POSTGRESQL_RO_PASSWORD}"
+node.override["chef_server"]["nginx"]["url"] = "${CHEF_URL}"
+node.override["chef_server"]["nginx"]["ssl_port"] = ${CHEF_FE_SSL_PORT}
+node.override["chef_server"]["nginx"]["non_ssl_port"] = ${CHEF_FE_PORT}
+node.override["chef_server"]["nginx"]["enable_non_ssl"] = true
+if (node['memory']['total'].to_i / 4) > ((node['chef_server']['postgresql']['shmmax'].to_i / 1024) - 2097152)
+  # guard against setting shared_buffers > shmmax on hosts with installed RAM > 64GB
+  # use 2GB less than shmmax as the default for these large memory machines
+  node.override['chef_server']['postgresql']['shared_buffers'] = "14336MB"
+else
+  node.override['chef_server']['postgresql']['shared_buffers'] = "#{(node['memory']['total'].to_i / 4) / (1024)}MB"
+end
+EOF
+
+HOMEDIR=$(getent passwd ${CHEF_UNIX_USER} | cut -d: -f6)
+export HOME=${HOMEDIR}
+
 chef-server-ctl reconfigure
 
 mkdir -p ${HOMEDIR}/.chef
@@ -43,7 +71,7 @@ ch3fz11
 EOF
     # setup the path
     #echo 'export PATH=${PATH}:/opt/chef-server/embedded/bin' >> ${HOMEDIR}/.profile
-    sed 's|\(PATH="[^"]*\)|&:/opt/chef-server/embedded/bin|' /etc/environment
+    sed -i 's|\(PATH="[^"]*\)|&:/opt/chef-server/embedded/bin|' /etc/environment
 fi
 
 apt-get autoremove
@@ -84,6 +112,7 @@ sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="quiet"/GRUB_CMDLINE_LINUX_DEFAULT="quiet c
 grub-install /dev/vda
 update-grub2
 
+# remove old kernels
 dpkg -l 'linux-*' | sed '/^ii/!d;/'"$(uname -r | sed "s/\(.*\)-\([^0-9]\+\)/\1/")"'/d;s/^[^ ]* [^ ]* \([^ ]*\).*/\1/;/[0-9]/!d' | xargs sudo apt-get -y purge
 
 #dd if=/dev/zero of=/tmp/zeros
