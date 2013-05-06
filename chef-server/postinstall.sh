@@ -30,22 +30,28 @@ curl -L "http://www.opscode.com/chef/download-server?p=ubuntu&pv=12.04&m=x86_64&
 dpkg -i /tmp/chef-server.deb
 
 mkdir -p /etc/chef-server
+# cat > /etc/chef-server/chef-server.rb <<EOF
+# node.override["chef_server"]["chef-server-webui"]["web_ui_admin_default_password"] = "${CHEF_WEBUI_PASSWORD}"
+# node.override["chef_server"]["rabbitmq"]["password"] = "${CHEF_AMQP_PASSWORD}"
+# node.override["chef_server"]["postgresql"]["sql_password"] = "${CHEF_POSTGRESQL_PASSWORD}"
+# node.override["chef_server"]["postgresql"]["sql_ro_password"] = "${CHEF_POSTGRESQL_RO_PASSWORD}"
+# node.override["chef_server"]["nginx"]["url"] = "${CHEF_URL}"
+# node.override["chef_server"]["nginx"]["ssl_port"] = ${CHEF_FE_SSL_PORT}
+# node.override["chef_server"]["nginx"]["non_ssl_port"] = ${CHEF_FE_PORT}
+# node.override["chef_server"]["nginx"]["enable_non_ssl"] = true
+# if (node['memory']['total'].to_i / 4) > ((node['chef_server']['postgresql']['shmmax'].to_i / 1024) - 2097152)
+#   # guard against setting shared_buffers > shmmax on hosts with installed RAM > 64GB
+#   # use 2GB less than shmmax as the default for these large memory machines
+#   node.override['chef_server']['postgresql']['shared_buffers'] = "14336MB"
+# else
+#   node.override['chef_server']['postgresql']['shared_buffers'] = "#{(node['memory']['total'].to_i / 4) / (1024)}MB"
+# end
+# EOF
 cat > /etc/chef-server/chef-server.rb <<EOF
-node.override["chef_server"]["chef-server-webui"]["web_ui_admin_default_password"] = "${CHEF_WEBUI_PASSWORD}"
-node.override["chef_server"]["rabbitmq"]["password"] = "${CHEF_AMQP_PASSWORD}"
-node.override["chef_server"]["postgresql"]["sql_password"] = "${CHEF_POSTGRESQL_PASSWORD}"
-node.override["chef_server"]["postgresql"]["sql_ro_password"] = "${CHEF_POSTGRESQL_RO_PASSWORD}"
-node.override["chef_server"]["nginx"]["url"] = "${CHEF_URL}"
-node.override["chef_server"]["nginx"]["ssl_port"] = ${CHEF_FE_SSL_PORT}
-node.override["chef_server"]["nginx"]["non_ssl_port"] = ${CHEF_FE_PORT}
-node.override["chef_server"]["nginx"]["enable_non_ssl"] = true
-if (node['memory']['total'].to_i / 4) > ((node['chef_server']['postgresql']['shmmax'].to_i / 1024) - 2097152)
-  # guard against setting shared_buffers > shmmax on hosts with installed RAM > 64GB
-  # use 2GB less than shmmax as the default for these large memory machines
-  node.override['chef_server']['postgresql']['shared_buffers'] = "14336MB"
-else
-  node.override['chef_server']['postgresql']['shared_buffers'] = "#{(node['memory']['total'].to_i / 4) / (1024)}MB"
-end
+nginx["ssl_port"] = 4000
+nginx["non_ssl_port"] = 4080
+nginx["enable_non_ssl"] = true
+rabbitmq["node_port"] = 5673
 EOF
 
 HOMEDIR=$(getent passwd ${CHEF_UNIX_USER} | cut -d: -f6)
