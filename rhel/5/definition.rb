@@ -1,4 +1,5 @@
-Veewee::Session.declare({
+definition = Veewee::Definition
+definition.declare({
   :cpu_count => '1',
   :memory_size=> '1024',
   :disk_size => '4096',
