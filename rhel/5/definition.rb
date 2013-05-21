@@ -1,5 +1,4 @@
-definition = Veewee::Definition
-definition.declare({
+$defaults = {
   :cpu_count => '1',
   :memory_size=> '1024',
   :disk_size => '4096',
@@ -8,9 +7,6 @@ definition.declare({
   :ioapic => 'on',
   :pae => 'on',
   :os_type_id => 'RedHat_64',
-  :iso_file => "CentOS-5.9-x86_64-bin-DVD-1of2.iso",
-  :iso_src => "http://mirrors.kernel.org/centos/5.9/isos/x86_64/CentOS-5.9-x86_64-bin-DVD-1of2.iso",
-  :iso_md5 => "c8caaa18400dfde2065d8ef58eb9e9bf",
   :iso_download_timeout => 10000,
   :boot_wait => "20",
   :boot_cmd_sequence => [
@@ -31,4 +27,4 @@ definition.declare({
     "postinstall.sh"
   ],
   :postinstall_timeout => 10000
-})
+}
