@@ -14,7 +14,6 @@ $defaults = {
   ],
   :kickstart_port => "7122",
   :kickstart_timeout => 10000,
-  :kickstart_file => "ks.cfg",
   :ssh_login_timeout => "10000",
   :ssh_user => "stack",
   :ssh_password => "stack",
