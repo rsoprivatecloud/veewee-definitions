@@ -9,6 +9,9 @@ $defaults = {
   :os_type_id => 'RedHat_64',
   :iso_download_timeout => 10000,
   :boot_wait => "20",
+  :boot_cmd_sequence => [
+    'linux text ks=http://%IP%:%PORT%/ks.cfg<Enter>'
+  ],
   :kickstart_file => "ks.cfg",
   :kickstart_port => "7122",
   :kickstart_timeout => 10000,
