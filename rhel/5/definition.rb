@@ -12,6 +12,7 @@ $defaults = {
   :boot_cmd_sequence => [
     'linux text ks=http://%IP%:%PORT%/ks.cfg<Enter>'
   ],
+  :kickstart_file => "ks.cfg",
   :kickstart_port => "7122",
   :kickstart_timeout => 10000,
   :ssh_login_timeout => "10000",
