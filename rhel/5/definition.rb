@@ -23,7 +23,7 @@ $defaults = {
   :ssh_guest_port => '22',
   :sudo_cmd => 'echo "%p" | sudo -S bash "%f"',
   :shutdown_cmd => '/sbin/halt -h -p',
-  :postinstall_files = [
+  :postinstall_files => [
     'postinstall.sh'
   ],
   :postinstall_timeout => 10000
