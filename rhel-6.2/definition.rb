@@ -1,7 +1,7 @@
 Veewee::Session.declare({
   :cpu_count => '1',
   :memory_size=> '1024',
-  :disk_size => '81920',
+  :disk_size => '19456',
   :disk_format => 'qcow2',
   :hostiocache => 'on',
   :ioapic => 'on',
