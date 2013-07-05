@@ -1,4 +1,3 @@
-veewee-definitions
-==================
+# veewee-definitions
 
-* magical rainbow unicorns of mystery
+OpenStack image building automation. And some magical rainbow unicorns of mystery.
