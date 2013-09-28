@@ -22,15 +22,17 @@ cat >> /etc/rc.local <<END
         dev=\${dev/:/}
         script=/etc/sysconfig/network-scripts/ifcfg-\$dev
         if [[ ! -f \$script ]] ; then
-            cat > \$script <<EOF
-DEVICE="\$dev"
-BOOTPROTO="dhcp"
-IPV6INIT="no"
-NM_CONTROLLED="yes"
-ONBOOT="yes"
-TYPE="Ethernet"
-EOF
+            cat > \$script <<-EOF
+                DEVICE="\$dev"
+                BOOTPROTO="dhcp"
+                IPV6INIT="no"
+                NM_CONTROLLED="yes"
+                ONBOOT="yes"
+                TYPE="Ethernet"
+            EOF
         fi
+        [[ ! \`grep PERSISTENT_DHCLIENT \$script\` ]] && \\
+            echo 'PERSISTENT_DHCLIENT="yes"' >> \$script
     done
     sed -i 's/IPV6INIT="yes"/IPV6INIT="no"/' /etc/sysconfig/network-scripts/ifcfg-*
     [[ ! \`grep GATEWAYDEV /etc/sysconfig/network\` ]] && \\
