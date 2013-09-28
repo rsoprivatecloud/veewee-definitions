@@ -15,7 +15,54 @@ tar xzf cloud-utils-0.27-bzr216.tar.gz cloud-utils-0.27-bzr216/bin/growpart
 install -m 0755 cloud-utils-0.27-bzr216/bin/growpart /usr/bin/growpart
 rm -rf cloud-utils*
 
-sed -i 's/^user: ec2-user/user: stack/g' /etc/cloud/cloud.cfg
+#sed -i 's/^user: ec2-user/user: stack/g' /etc/cloud/cloud.cfg
+cat > /etc/cloud/cloud.cfg <<END
+# Fix for RHEL hostname bug in older versions of cloud-init
+bootcmd:
+ - rm -f /etc/hostname || true
+
+user: stack
+disable_root: 1
+ssh_pwauth:   0
+
+cc_ready_cmd: ['/bin/true']
+locale_configfile: /etc/sysconfig/i18n
+mount_default_fields: [~, ~, 'auto', 'defaults,nofail', '0', '2']
+ssh_deletekeys:   0
+ssh_genkeytypes:  ~
+ssh_svcname:      sshd
+syslog_fix_perms: ~
+
+cloud_init_modules:
+ - bootcmd
+ - resizefs
+ - set_hostname
+ - update_hostname
+ - rsyslog
+ - ssh
+
+cloud_config_modules:
+ - runcmd
+ - mounts
+ - ssh-import-id
+ - locale
+ - set-passwords
+ - timezone
+ - puppet
+ - disable-ec2-metadata
+
+cloud_final_modules:
+ - rightscale_userdata
+ - scripts-per-once
+ - scripts-per-boot
+ - scripts-per-instance
+ - scripts-user
+ - keys-to-console
+ - phone-home
+ - final-message
+
+# vim:syntax=yaml
+END
 
 cat >> /etc/rc.local <<END
     for dev in \`awk '\$1 ~ /^eth/ {print \$1}' /proc/net/dev\` ; do
