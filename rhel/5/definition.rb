@@ -24,7 +24,8 @@ $defaults = {
   :sudo_cmd => 'echo "%p" | sudo -S bash "%f"',
   :shutdown_cmd => '/sbin/halt -h -p',
   :postinstall_files => [
-    'postinstall.sh'
+    'postinstall.sh',
+    'dhclient_opt_121.sh'
   ],
   :postinstall_timeout => 10000
 }
