@@ -1,11 +1,11 @@
 #!/bin/bash
 
-cat > /etc/dhclient.conf <<END
+/bin/cat > /etc/dhclient.conf <<"END"
 option classless-static-routes code 121 = array of unsigned integer 8;
 request;
 END
 
-cat > /etc/dhclient-exit-hooks <<END
+/bin/cat > /etc/dhclient-exit-hooks <<"END"
 #
 # This file is called from /sbin/dhclient-script after a DHCP run.
 #
