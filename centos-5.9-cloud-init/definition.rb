@@ -1,33 +1,10 @@
-Veewee::Session.declare({
-  :cpu_count => '1',
-  :memory_size=> '1024',
-  :disk_size => '4096',
-  :disk_format => 'qcow2',
-  :hostiocache => 'on',
-  :ioapic => 'on',
-  :pae => 'on',
-  :os_type_id => 'RedHat_64',
-  :iso_file => "CentOS-5.9-x86_64-bin-DVD-1of2.iso",
-  :iso_src => "http://mirrors.kernel.org/centos/5.9/isos/x86_64/CentOS-5.9-x86_64-bin-DVD-1of2.iso",
-  :iso_md5 => "c8caaa18400dfde2065d8ef58eb9e9bf",
-  :iso_download_timeout => 10000,
-  :boot_wait => "20",
-  :boot_cmd_sequence => [
-    'linux text ks=http://%IP%:%PORT%/ks.cfg<Enter>'
-  ],
-  :kickstart_port => "7122",
-  :kickstart_timeout => 10000,
-  :kickstart_file => "ks.cfg",
-  :ssh_login_timeout => "10000",
-  :ssh_user => "stack",
-  :ssh_password => "stack",
-  :ssh_key => "",
-  :ssh_host_port => "7222",
-  :ssh_guest_port => "22",
-  :sudo_cmd => "echo '%p'|sudo -S bash '%f'",
-  :shutdown_cmd => "/sbin/halt -h -p",
-  :postinstall_files => [
-    "postinstall.sh"
-  ],
-  :postinstall_timeout => 10000
-})
+require '../rhel/5/definition'
+
+definition.declare($defaults)
+
+definition.iso_src = 'http://mirrors.kernel.org/centos/5.9/isos/x86_64/CentOS-5.9-x86_64-bin-DVD-1of2.iso'
+definition.iso_file = 'CentOS-5.9-x86_64-bin-DVD-1of2.iso'
+definition.iso_md5 = 'c8caaa18400dfde2065d8ef58eb9e9bf'
+
+# definition specific post-install files
+#definition.postinstall_files << 'custom.sh'
