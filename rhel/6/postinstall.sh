@@ -74,7 +74,7 @@ cat >> /etc/rc.local <<END
                 NM_CONTROLLED="yes"
                 ONBOOT="yes"
                 TYPE="Ethernet"
-            EOF
+EOF
         fi
         [[ ! \`grep PERSISTENT_DHCLIENT \$script\` ]] && \\
             echo 'PERSISTENT_DHCLIENT="yes"' >> \$script
