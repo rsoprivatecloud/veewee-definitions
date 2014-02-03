@@ -85,7 +85,7 @@ EOF
     service network restart
     PATH="$PATH:/sbin"
     #ROOTPART=\`parted -s /dev/vda print | awk '/boot/ {print \$1}'\`
-    ROOTPART=\`sfdisk -d /dev/vda 2>&1 | awk '\$1 ~ "/dev/vda" && \$8 == "bootable" {gsub("/dev/vda", "", \$1); print \$1}'\`
+    ROOTPART=\`sfdisk -d /dev/vda 2>&1 | awk '\$1 ~ "/dev/vda" && /bootable/ {gsub("/dev/vda", "", \$1); print \$1}'\`
     [[ ! -f /etc/growroot-disabled ]] && \\
         growpart /dev/vda \$ROOTPART | fgrep 'CHANGED:' && \\
         shutdown -r now
@@ -101,6 +101,8 @@ cat >> /etc/sysctl.conf <<END
 net.ipv6.conf.all.disable_ipv6 = 1
 net.ipv6.conf.default.disable_ipv6 = 1
 END
+
+sed -i 's/requiretty/!requiretty/' /etc/sudoers
 
 # needed for console logging in kvm
 sed -i 's/kernel.*/& console=tty console=ttyS0 console=hvc0/' /boot/grub/grub.conf # pci=nobfsort
