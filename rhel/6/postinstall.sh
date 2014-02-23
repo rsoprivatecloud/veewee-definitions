@@ -82,7 +82,12 @@ EOF
     sed -i 's/IPV6INIT="yes"/IPV6INIT="no"/' /etc/sysconfig/network-scripts/ifcfg-*
     [[ ! \`grep GATEWAYDEV /etc/sysconfig/network\` ]] && \\
         echo GATEWAYDEV=eth0 >> /etc/sysconfig/network
-    service network restart
+
+    # delete the old leases so we do full DORA for lease
+    service network stop
+    rm -fv /var/lib/dhclient/dhclient-*.leases
+    service network start
+
     PATH="$PATH:/sbin"
     #ROOTPART=\`parted -s /dev/vda print | awk '/boot/ {print \$1}'\`
     ROOTPART=\`sfdisk -d /dev/vda 2>&1 | awk '\$1 ~ "/dev/vda" && /bootable/ {gsub("/dev/vda", "", \$1); print \$1}'\`

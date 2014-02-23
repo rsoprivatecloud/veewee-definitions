@@ -1,1 +1,0 @@
-../rhel/5/postinstall.sh

@@ -1,1 +1,0 @@
-../rhel/5/dhclient_opt_121.sh
