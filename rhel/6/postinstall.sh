@@ -1,7 +1,7 @@
 yum install -y http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
 
 yum -y update
-yum -y upgrade
+#yum -y upgrade
 yum install -y cloud-init
 
 ## why is /usr/bin/growpart 0 bytes when installed this way?
