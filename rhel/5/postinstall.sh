@@ -2,8 +2,8 @@ wget http://dl.fedoraproject.org/pub/epel/5/x86_64/epel-release-5-4.noarch.rpm
 rpm -Uvh epel*
 rm -f epel*
 
-yum -y update
-yum -y upgrade
+#yum -y update
+#yum -y upgrade
 yum install -y cloud-init
 
 #wget http://kojipkgs.fedoraproject.org/packages/cloud-utils/0.27/0.2.bzr216.fc18/noarch/cloud-utils-0.27-0.2.bzr216.fc18.noarch.rpm
